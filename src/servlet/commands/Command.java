@@ -4,8 +4,14 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**
- * Created by artvi on 01/05/2016.
+ * General interface for all commands.
  */
 public interface Command {
+    /**
+     * Command executing
+     *
+     * @throws ServletException
+     * @throws IOException
+     */
     void execute() throws ServletException, IOException;
 }

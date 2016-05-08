@@ -3,7 +3,8 @@ package exceptions;
 import javax.servlet.ServletException;
 
 /**
- * Created by artvi on 07/05/2016.
+ * Exception that can pe thrown from methods of Administrator class.
+ * Also contains message that will be shown in error page
  */
 public class AdministratorException extends ServletException {
     public AdministratorException(String message) {

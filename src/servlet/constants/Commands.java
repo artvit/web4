@@ -1,7 +1,7 @@
 package servlet.constants;
 
 /**
- * Created by artvi on 06/05/2016.
+ * Class contains only constants for commands.
  */
 public class Commands {
     public static String APPLICANTS_OF_FACULTY = "applicoffac";

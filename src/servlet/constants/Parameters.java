@@ -1,7 +1,7 @@
 package servlet.constants;
 
 /**
- * Created by artvi on 06/05/2016.
+ * Class contains only constants for parameters.
  */
 public class Parameters {
     public static String COMMAND_PARAMETER = "command";

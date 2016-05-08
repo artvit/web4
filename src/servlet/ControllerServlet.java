@@ -2,6 +2,7 @@ package servlet;
 
 import servlet.commands.*;
 import servlet.constants.Commands;
+import servlet.constants.Pages;
 import servlet.constants.Parameters;
 
 import javax.servlet.ServletException;
@@ -18,6 +19,14 @@ public class ControllerServlet extends HttpServlet {
     private static final String LAST_VISITED_COOKIE_NAME = "lastvisited";
     private static final String VISITS_COOKIE_NAME = "visits";
 
+    /**
+     * Method determines which command must be executed and creates and executes that one.
+     *
+     * @param request HttpServletRequest object
+     * @param response HttpServletResponse object
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (Commands.APPLICANTS_OF_FACULTY.equals(request.getParameter(Parameters.COMMAND_PARAMETER))) {
@@ -35,30 +44,38 @@ public class ControllerServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Method determines if there is session with user and if updates cookies and no creates one.
+     *
+     * @param request HttpServletRequest object
+     * @param response HttpServletResponse object
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        super.doGet(req, resp);
-        HttpSession session = req.getSession(false);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//        super.doGet(request, response);
+        HttpSession session = request.getSession(false);
         if (session == null) {
-            Cookie lastVisitedCookie = getCookie(req, LAST_VISITED_COOKIE_NAME);
+            Cookie lastVisitedCookie = getCookie(request, LAST_VISITED_COOKIE_NAME);
             if (lastVisitedCookie != null) {
                 lastVisitedCookie.setValue(getCurrentDateTime());
             } else {
                 lastVisitedCookie = new Cookie(LAST_VISITED_COOKIE_NAME, getCurrentDateTime());
             }
-            resp.addCookie(lastVisitedCookie);
+            response.addCookie(lastVisitedCookie);
 
-            Cookie visitsCookie = getCookie(req, VISITS_COOKIE_NAME);
+            Cookie visitsCookie = getCookie(request, VISITS_COOKIE_NAME);
             if (visitsCookie != null) {
                 int visits = Integer.parseInt(visitsCookie.getValue());
                 visitsCookie.setValue(Integer.toString(visits + 1));
             } else {
                 visitsCookie = new Cookie(VISITS_COOKIE_NAME, "1");
             }
-            resp.addCookie(visitsCookie);
+            response.addCookie(visitsCookie);
         }
-        req.getSession();
-        req.getRequestDispatcher("/index.jsp").forward(req, resp);
+        request.getSession();
+        request.getRequestDispatcher(Pages.INDEX_PAGE).forward(request, response);
     }
 
     private static Cookie getCookie(HttpServletRequest request, String name) {

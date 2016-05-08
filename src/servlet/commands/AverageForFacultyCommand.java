@@ -1,5 +1,7 @@
 package servlet.commands;
 
+import servlet.constants.Attributes;
+import servlet.constants.Pages;
 import servlet.constants.Parameters;
 import utils.Administrator;
 
@@ -9,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by artvi on 02/05/2016.
+ * Command processes request for displaying average mark for faculty.
  */
 public class AverageForFacultyCommand implements Command {
     private HttpServletRequest request;
@@ -25,8 +27,8 @@ public class AverageForFacultyCommand implements Command {
         Administrator administrator = new Administrator();
         String faculty = request.getParameter(Parameters.FACULTY_PARAMETER);
         double average = administrator.getAverageForFaculty(faculty);
-        request.setAttribute("result", average);
-        request.setAttribute("faculty", faculty);
-        request.getRequestDispatcher("/pages/average.jsp").forward(request, response);
+        request.setAttribute(Attributes.RESULT_ATTR, average);
+        request.setAttribute(Attributes.FACULTY_ATTR, faculty);
+        request.getRequestDispatcher(Pages.AVERAGE_FOR_FACULTY_PAGE).forward(request, response);
     }
 }

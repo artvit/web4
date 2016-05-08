@@ -1,6 +1,8 @@
 package servlet.commands;
 
 import entities.Applicant;
+import servlet.constants.Attributes;
+import servlet.constants.Pages;
 import servlet.constants.Parameters;
 import utils.Administrator;
 
@@ -11,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by artvi on 02/05/2016.
+ * Command process request for displaying applicants for faculty that have total mark over average.
  */
 public class ApplicantsOverAverageCommand implements Command {
     private HttpServletRequest request;
@@ -27,8 +29,8 @@ public class ApplicantsOverAverageCommand implements Command {
         Administrator administrator = new Administrator();
         String faculty = request.getParameter(Parameters.FACULTY_PARAMETER);
         List<Applicant> applicants = administrator.getApplicantsForFacultyOverAverage(faculty);
-        request.setAttribute("results", applicants);
-        request.setAttribute("faculty", faculty);
-        request.getRequestDispatcher("/pages/applic-over-average.jsp").forward(request, response);
+        request.setAttribute(Attributes.RESULTS_LIST_ATTR, applicants);
+        request.setAttribute(Attributes.FACULTY_ATTR, faculty);
+        request.getRequestDispatcher(Pages.APPLICANT_OVER_AVERAGE_PAGE).forward(request, response);
     }
 }

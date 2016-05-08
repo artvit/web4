@@ -1,5 +1,6 @@
 package servlet.commands;
 
+import servlet.constants.Pages;
 import servlet.constants.Parameters;
 import utils.Administrator;
 
@@ -9,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Command that process request for adding applicant
+ * Command processes request for adding applicant
  */
 public class AddApplicantCommand implements Command {
     private HttpServletRequest request;
@@ -34,7 +35,7 @@ public class AddApplicantCommand implements Command {
                 administrator.addNewMark(name, subject, mark);
                 i += 1;
             }
-            request.getRequestDispatcher("/pages/add-applic-success.jsp").forward(request, response);
+            request.getRequestDispatcher(Pages.ADD_APPLICAT_SUCCESS_PAGE).forward(request, response);
         }
     }
 }
