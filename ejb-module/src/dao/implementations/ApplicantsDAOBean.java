@@ -1,20 +1,26 @@
-package dao;
+package dao.implementations;
 
+import dao.interfaces.ApplicantsDAOBeanRemote;
 import entities.Applicant;
 import entities.Faculty;
 import exceptions.DAOException;
 import exceptions.NoDataFoundDAOException;
 import exceptions.NoDataUpdatedDAOException;
-import utils.EMFS;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
 
 /**
  * DAO class for applicants table.
  */
-public class ApplicantsDAO {
+@Stateless(mappedName = "ApplicantsDAOBean")
+public class ApplicantsDAOBean implements ApplicantsDAOBeanRemote {
+    @PersistenceContext(unitName = "Exams")
+    private EntityManager em;
+
     /**
      * Returns list of applicants for specified faculty.
      *
@@ -34,12 +40,8 @@ public class ApplicantsDAO {
      * @throws DAOException
      */
     public void setEntered(Applicant applicant, boolean entered) throws DAOException {
-        EntityManager em = EMFS.getEntityManager();
-        em.getTransaction().begin();
         applicant.setEntered(entered);
         em.merge(applicant);
-        em.getTransaction().commit();
-        em.close();
     }
 
     /**
@@ -50,8 +52,6 @@ public class ApplicantsDAO {
      */
     public List<Applicant> getAllApplicants() throws DAOException {
         List<Applicant> result = null;
-        EntityManager em = EMFS.getEntityManager();
-        em.getTransaction().begin();
         try {
             Query q = em.createNamedQuery("Applicant.findAll");
             result = (List<Applicant>) q.getResultList();
@@ -61,8 +61,6 @@ public class ApplicantsDAO {
         if (result.size() == 0) {
             throw new NoDataFoundDAOException("No data was found");
         }
-        em.getTransaction().commit();
-        em.close();
         return result;
     }
 
@@ -74,16 +72,12 @@ public class ApplicantsDAO {
      * @throws DAOException
      */
     public void setTotalForApplicant(Applicant applicant, double total) throws DAOException {
-        EntityManager em = EMFS.getEntityManager();
-        em.getTransaction().begin();
         try {
             applicant.setTotal(total);
             em.merge(applicant);
         } catch (Exception e) {
             throw new NoDataUpdatedDAOException("No data was updated for applicant");
         }
-        em.getTransaction().commit();
-        em.close();
     }
 
     /**
@@ -110,21 +104,12 @@ public class ApplicantsDAO {
      * @throws DAOException
      */
     public void addNewApplicant(Applicant applicant, Faculty faculty) throws DAOException {
-        EntityManager em = EMFS.getEntityManager();
-         
-        em.getTransaction().begin();
-         
         try {
             applicant.setFaculty(faculty);
             em.persist(applicant);
-             
         } catch (Exception e) {
             throw new NoDataUpdatedDAOException("No new data was added to DB");
         }
-        em.getTransaction().commit();
-         
-        em.close();
-         
     }
 
     /**
@@ -136,22 +121,13 @@ public class ApplicantsDAO {
      */
     public Applicant getApplicant(String applicantName) throws DAOException {
         Applicant result;
-        EntityManager em = EMFS.getEntityManager();
-         
-        em.getTransaction().begin();
-         
         try {
             Query query = em.createNamedQuery("Applicant.findByName");
             query.setParameter("name", applicantName);
             result = (Applicant) query.getSingleResult();
-             
         } catch (Exception e){
             throw new NoDataFoundDAOException("Error while getting applicant");
         }
-        em.getTransaction().commit();
-         
-        em.close();
         return result;
-         
     }
 }

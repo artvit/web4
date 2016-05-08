@@ -2,10 +2,13 @@
   <artifact type="exploded-war" name="web24t:war exploded">
     <output-path>$PROJECT_DIR$/out/artifacts/web24t_war_exploded</output-path>
     <root id="root">
-      <element id="javaee-facet-resources" facet="web24t/web/Web" />
+      <element id="javaee-facet-resources" facet="web-application/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
-          <element id="module-output" name="web24t" />
+          <element id="module-output" name="web-application" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="hibernate-jpa" />
         </element>
       </element>
     </root>

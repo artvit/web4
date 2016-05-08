@@ -1,20 +1,27 @@
-package dao;
+package dao.implementations;
 
+import dao.interfaces.SheetDAOBeanRemote;
 import entities.Applicant;
 import entities.SheetRecord;
 import entities.Subject;
 import exceptions.DAOException;
 import exceptions.NoDataFoundDAOException;
 import exceptions.NoDataUpdatedDAOException;
-import utils.EMFS;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 /**
  * DAO class for sheet table.
  */
-public class SheetDAO {
+@Stateless(mappedName = "SheetDAOBean")
+public class SheetDAOBean implements SheetDAOBeanRemote {
+
+    @PersistenceContext(unitName = "Exams")
+    private EntityManager em;
+
     /**
      * Sets mark for specified applicant and subject.
      *
@@ -24,8 +31,6 @@ public class SheetDAO {
      * @throws DAOException
      */
     public void setMark(Applicant applicant, Subject subject, double mark) throws DAOException {
-        EntityManager em = EMFS.getEntityManager();
-        em.getTransaction().begin();
         try {
             Query query = em.createNamedQuery("SheetRecord.findByApplicantSubject");
             query.setParameter("applicant", applicant);
@@ -36,10 +41,6 @@ public class SheetDAO {
         } catch (Exception e){
             throw new NoDataFoundDAOException("Error while updating SheetRecord");
         }
-        em.getTransaction().commit();
-        
-        em.close();
-        
     }
 
     /**
@@ -52,24 +53,15 @@ public class SheetDAO {
      */
     public double getMark(Applicant applicant, Subject subject) throws DAOException {
         double mark;
-        EntityManager em = EMFS.getEntityManager();
-        
-        em.getTransaction().begin();
-        
         try {
             Query query = em.createNamedQuery("SheetRecord.findByApplicantSubject");
             query.setParameter("applicant", applicant);
             query.setParameter("subject", subject);
             mark = ((SheetRecord) query.getSingleResult()).getMark();
-            
         } catch (Exception e){
             throw new NoDataFoundDAOException("Error while extracting mark");
         }
-        em.getTransaction().commit();
-        
-        em.close();
         return mark;
-        
     }
 
     /**
@@ -81,10 +73,6 @@ public class SheetDAO {
      * @throws DAOException
      */
     public void newMark(Applicant applicant, Subject subject, double mark) throws DAOException {
-        EntityManager em = EMFS.getEntityManager();
-        
-        em.getTransaction().begin();
-        
         try {
             SheetRecord sheetRecord = new SheetRecord();
             sheetRecord.setApplicant(applicant);
@@ -92,9 +80,7 @@ public class SheetDAO {
             sheetRecord.setMark(mark);
             em.persist(sheetRecord);
         } catch (Exception e) {
-            throw new NoDataUpdatedDAOException("Error while adding new SheetRecord", e);
+            throw new NoDataUpdatedDAOException("Error while adding new SheetRecord");
         }
-        em.getTransaction().commit();
-        em.close();
     }
 }

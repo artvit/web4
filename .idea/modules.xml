@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/web24t.iml" filepath="$PROJECT_DIR$/web24t.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ejb-module/ejb-module.iml" filepath="$PROJECT_DIR$/ejb-module/ejb-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web-application.iml" filepath="$PROJECT_DIR$/web-application.iml" />
     </modules>
   </component>
 </project>

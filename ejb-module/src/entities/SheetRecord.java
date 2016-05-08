@@ -1,14 +1,31 @@
 package entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * Class represents record in sheet table
  */
+@Entity
+@Table(name = "sheet")
+@NamedQueries({
+        @NamedQuery(name = "SheetRecord.findByApplicantSubject",
+                query = "SELECT s FROM SheetRecord s WHERE s.applicant = :applicant AND s.subject = :subject"),
+        @NamedQuery(name = "SheetRecord.findRecordsForApplicant",
+                query = "SELECT s FROM SheetRecord s WHERE s.applicant = :applicant")
+})
 public class SheetRecord implements Serializable {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "mark")
     private double mark;
+    @ManyToOne
+    @JoinColumn(name = "appid")
     private Applicant applicant;
+    @ManyToOne
+    @JoinColumn(name = "subid")
     private Subject subject;
 
     public int getId() {

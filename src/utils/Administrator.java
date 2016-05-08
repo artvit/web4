@@ -1,14 +1,14 @@
 package utils;
 
-import dao.ApplicantsDAO;
-import dao.FacultiesDAO;
-import dao.SheetDAO;
-import dao.SubjectsDAO;
 import entities.Applicant;
 import entities.Faculty;
 import entities.Subject;
 import exceptions.AdministratorException;
 import exceptions.DAOException;
+import dao.interfaces.ApplicantsDAOBeanRemote;
+import dao.interfaces.FacultiesDAOBeanRemote;
+import dao.interfaces.SheetDAOBeanRemote;
+import dao.interfaces.SubjectsDAOBeanRemote;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,16 +19,27 @@ import java.util.Random;
  */
 public class Administrator {
 
+    private ApplicantsDAOBeanRemote applicantsDAO;
+    private FacultiesDAOBeanRemote facultiesDAO;
+    private SheetDAOBeanRemote sheetDAO;
+    private SubjectsDAOBeanRemote subjectsDAO;
+
+    public Administrator(ApplicantsDAOBeanRemote applicantsDAO, FacultiesDAOBeanRemote facultiesDAO, SheetDAOBeanRemote sheetDAO, SubjectsDAOBeanRemote subjectsDAO) {
+        this.applicantsDAO = applicantsDAO;
+        this.facultiesDAO = facultiesDAO;
+        this.sheetDAO = sheetDAO;
+        this.subjectsDAO = subjectsDAO;
+    }
+
     /**
      * Set marks for all applicants.
      */
     public void rateApplicants() throws AdministratorException {
         try {
-            SheetDAO sheetDAO = new SheetDAO();
             Random random = new Random();
-            List<Applicant> applicants = new ApplicantsDAO().getAllApplicants();
+            List<Applicant> applicants = applicantsDAO.getAllApplicants();
             for (Applicant applicant : applicants) {
-                List<Subject> subjects = new SubjectsDAO().getSubjectsForApplicant(applicant);
+                List<Subject> subjects = subjectsDAO.getSubjectsForApplicant(applicant);
                 for (Subject subject : subjects) {
                     sheetDAO.setMark(applicant, subject, random.nextInt(11));
                 }
@@ -43,7 +54,7 @@ public class Administrator {
      */
     public void countTotal() throws AdministratorException {
         try {
-            List<Applicant> applicants = new ApplicantsDAO().getAllApplicants();
+            List<Applicant> applicants = applicantsDAO.getAllApplicants();
             for (Applicant applicant : applicants) {
                 countTotal(applicant);
             }
@@ -58,14 +69,13 @@ public class Administrator {
      */
     public void countTotal(Applicant applicant) throws AdministratorException {
         try {
-            SheetDAO sheetDAO = new SheetDAO();
-            List<Subject> subjects = new SubjectsDAO().getSubjectsForApplicant(applicant);
+            List<Subject> subjects = subjectsDAO.getSubjectsForApplicant(applicant);
             double total = 0;
             for (Subject subject : subjects) {
                 total += sheetDAO.getMark(applicant, subject);
             }
             total /= subjects.size();
-            new ApplicantsDAO().setTotalForApplicant(applicant, total);
+            applicantsDAO.setTotalForApplicant(applicant, total);
         } catch (DAOException e){
             throw new AdministratorException("Can't count total for applicant " + applicant.getName());
         }
@@ -76,8 +86,7 @@ public class Administrator {
      */
     public void takeApplicants() throws AdministratorException {
         try {
-            ApplicantsDAO applicantsDAO = new ApplicantsDAO();
-            List<Faculty> faculties = new FacultiesDAO().getAllFaculties();
+            List<Faculty> faculties = facultiesDAO.getAllFaculties();
             for (Faculty faculty : faculties) {
                 int plan = faculty.getPlan();
                 List<Applicant> applicants = applicantsDAO.getApplicantsForFaculty(faculty);
@@ -108,9 +117,8 @@ public class Administrator {
     public List<Applicant> getApplicantsForFaculty(String facultyName) throws AdministratorException {
         List<Applicant> result = null;
         try {
-            FacultiesDAO faculties = new FacultiesDAO();
-            Faculty faculty = faculties.getFaculty(facultyName);
-            result =  new ApplicantsDAO().getApplicantsForFaculty(faculty);
+            Faculty faculty = facultiesDAO.getFaculty(facultyName);
+            result =  applicantsDAO.getApplicantsForFaculty(faculty);
         } catch (DAOException e){
             throw new AdministratorException("Can't get applicants for faculty " + facultyName);
         }
@@ -126,9 +134,7 @@ public class Administrator {
     public double getAverageForFaculty(String facultyName) throws AdministratorException {
         double result = 0;
         try {
-            ApplicantsDAO applicantsDAO = new ApplicantsDAO();
-            FacultiesDAO faculties = new FacultiesDAO();
-            Faculty faculty = faculties.getFaculty(facultyName);
+            Faculty faculty = facultiesDAO.getFaculty(facultyName);
             result = applicantsDAO.getAverageForFaculty(faculty);
         } catch (DAOException e){
             throw new AdministratorException("Can't get average mark for faculty " + facultyName);
@@ -142,9 +148,7 @@ public class Administrator {
     public List<Applicant> getApplicantsForFacultyOverAverage(String facultyName) throws AdministratorException {
         List<Applicant> result = null;
         try {
-            ApplicantsDAO applicantsDAO = new ApplicantsDAO();
-            FacultiesDAO faculties = new FacultiesDAO();
-            Faculty faculty = faculties.getFaculty(facultyName);
+            Faculty faculty = facultiesDAO.getFaculty(facultyName);
             List<Applicant> applicantsFromFaculty = applicantsDAO.getApplicantsForFaculty(faculty);
             double average = applicantsDAO.getAverageForFaculty(faculty);
             result = new LinkedList<>();
@@ -161,9 +165,7 @@ public class Administrator {
 
     public void addNewApplicant(String applicantName, String facultyName) throws AdministratorException {
         try {
-            ApplicantsDAO applicantsDAO = new ApplicantsDAO();
-            FacultiesDAO faculties = new FacultiesDAO();
-            Faculty faculty = faculties.getFaculty(facultyName);
+            Faculty faculty = facultiesDAO.getFaculty(facultyName);
             Applicant applicant =  new Applicant();
             applicant.setName(applicantName);
             applicantsDAO.addNewApplicant(applicant, faculty);
@@ -182,9 +184,6 @@ public class Administrator {
      */
     public void addNewMark(String applicantName, String subjectName, double mark) throws AdministratorException {
         try {
-            ApplicantsDAO applicantsDAO = new ApplicantsDAO();
-            SubjectsDAO subjectsDAO = new SubjectsDAO();
-            SheetDAO sheetDAO = new SheetDAO();
             Applicant applicant = applicantsDAO.getApplicant(applicantName);
             Subject subject = subjectsDAO.getSubject(subjectName);
             sheetDAO.newMark(applicant, subject, mark);

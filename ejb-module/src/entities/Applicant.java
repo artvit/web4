@@ -1,17 +1,34 @@
 package entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 /**
  * Class for storing data for entity Applicant.
  */
+@Entity
+@Table(name = "applicants", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
+@NamedQueries({
+        @NamedQuery(name = "Applicant.findAll", query = "SELECT a FROM Applicant a"),
+        @NamedQuery(name = "Applicant.findByName", query = "SELECT a FROM Applicant a WHERE a.name = :name")
+})
 public class Applicant implements Serializable {
+    @Id
+    @Column(name = "appid")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "name",
+            nullable = false)
     private String name;
+    @Column(name = "entered")
     private boolean entered;
+    @Column(name = "total")
     private double total;
+    @ManyToOne
+    @JoinColumn(name = "faculty", referencedColumnName = "facid")
     private Faculty faculty;
+    @OneToMany(mappedBy = "applicant", fetch = FetchType.EAGER)
     private List<SheetRecord> exams;
 
     public int getId() {

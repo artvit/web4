@@ -1,10 +1,15 @@
 package servlet;
 
+import dao.interfaces.ApplicantsDAOBeanRemote;
+import dao.interfaces.FacultiesDAOBeanRemote;
+import dao.interfaces.SheetDAOBeanRemote;
+import dao.interfaces.SubjectsDAOBeanRemote;
 import servlet.commands.*;
 import servlet.constants.Commands;
 import servlet.constants.Pages;
 import servlet.constants.Parameters;
 
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
@@ -19,6 +24,15 @@ public class ControllerServlet extends HttpServlet {
     private static final String LAST_VISITED_COOKIE_NAME = "lastvisited";
     private static final String VISITS_COOKIE_NAME = "visits";
 
+    @EJB(mappedName = "ApplicantsDAOBean")
+    private ApplicantsDAOBeanRemote applicantsDAO;
+    @EJB(mappedName = "FacultiesDAOBean")
+    private FacultiesDAOBeanRemote facultiesDAO;
+    @EJB(mappedName = "SheetDAOBean")
+    private SheetDAOBeanRemote sheetDAO;
+    @EJB(mappedName = "SubjectsDAOBean")
+    private SubjectsDAOBeanRemote subjectsDAO;
+
     /**
      * Method determines which command must be executed and creates and executes that one.
      *
@@ -30,16 +44,16 @@ public class ControllerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (Commands.APPLICANTS_OF_FACULTY.equals(request.getParameter(Parameters.COMMAND_PARAMETER))) {
-            Command command = new ApplicantsForFacultyCommand(request, response);
+            Command command = new ApplicantsForFacultyCommand(request, response, applicantsDAO, facultiesDAO, sheetDAO, subjectsDAO);
             command.execute();
         } else if (Commands.APPLICANTS_OVER_AVERAGE_OF_FACULTY.equals(request.getParameter(Parameters.COMMAND_PARAMETER))) {
-            Command command = new ApplicantsOverAverageCommand(request, response);
+            Command command = new ApplicantsOverAverageCommand(request, response, applicantsDAO, facultiesDAO, sheetDAO, subjectsDAO);
             command.execute();
         } else if (Commands.AVERAGE_FOR_FACULTY.equals(request.getParameter(Parameters.COMMAND_PARAMETER))) {
-            Command command = new AverageForFacultyCommand(request, response);
+            Command command = new AverageForFacultyCommand(request, response, applicantsDAO, facultiesDAO, sheetDAO, subjectsDAO);
             command.execute();
         } else if (Commands.ADD_APPLICANT.equals(request.getParameter(Parameters.COMMAND_PARAMETER))) {
-            Command command = new AddApplicantCommand(request, response);
+            Command command = new AddApplicantCommand(request, response, applicantsDAO, facultiesDAO, sheetDAO, subjectsDAO);
             command.execute();
         }
     }
