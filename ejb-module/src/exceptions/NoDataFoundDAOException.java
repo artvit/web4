@@ -11,4 +11,8 @@ public class NoDataFoundDAOException extends DAOException {
     public NoDataFoundDAOException() {
         super();
     }
+
+    public NoDataFoundDAOException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

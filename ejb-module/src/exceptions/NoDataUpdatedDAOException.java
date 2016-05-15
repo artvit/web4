@@ -9,6 +9,10 @@ public class NoDataUpdatedDAOException extends DAOException {
     }
 
     public NoDataUpdatedDAOException() {
+        super();
+    }
 
+    public NoDataUpdatedDAOException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
